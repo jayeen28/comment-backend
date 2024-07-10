@@ -6,7 +6,7 @@ const commentSchema = new Schema({
     content: { type: String, required: true },
     reactions: [{
         element: { type: String, enum: ['like', 'dislike'], required: true },
-        user: { type: Schema.Types.ObjectId, required: true, ref: 'User', unique: true },
+        user: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
         _id: false
     }],
     edited: { type: Boolean, default: false },
