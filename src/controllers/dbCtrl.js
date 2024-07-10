@@ -51,7 +51,11 @@ module.exports.create = async ({ table, payload }) => {
   return res;
 };
 
-module.exports.update = async ({ table, payload }) => {
+module.exports.rawUpdate = async ({ table, payload }) => {
+  return table.updateOne(payload.query, payload.update);
+}
+
+module.exports.updateWithSave = async ({ table, payload }) => {
   const element = await table.findOne(payload.query);
   if (!element) return null;
   Object.keys(payload.update || {}).forEach(param => element[param] = payload.update[param]);

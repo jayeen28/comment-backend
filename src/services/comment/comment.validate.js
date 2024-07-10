@@ -17,4 +17,11 @@ module.exports.validEdit = {
     body: {
         content: joi.string().required().max(900),
     }
-}
+};
+
+module.exports.validReaction = {
+    params: joi.object().keys({
+        reaction: joi.string().required().valid('like', 'dislike'),
+        id: joi.string().required(),
+    })
+};

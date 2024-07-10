@@ -1,6 +1,6 @@
 const { validate } = require('../middlewares');
-const { create, get, getAll, update, remove } = require('./comment.entity');
-const { validComment, validEdit } = require('./comment.validate');
+const { create, get, getAll, update, remove, reaction } = require('./comment.entity');
+const { validComment, validEdit, validReaction } = require('./comment.validate');
 
 /**
  * INSTRUCTIONS:
@@ -43,13 +43,13 @@ function commentApi() {
     */
     this.router.patch('/comment/edit/:id', this.auth(), validate(validEdit), update(this));
 
-    // /**
-    //  * PATCH /comment/:id
-    //  * @description This route is used to update a comment.
-    //  * @response {Object} 200 - The updated comment.
-    //  * @body {Object} - The data to update a comment.
-    // */
-    // this.router.patch('/comment/react/:reaction', update(this));
+    /**
+     * PATCH /comment/:id
+     * @description This route is used to update a comment.
+     * @response {Object} 200 - The updated comment.
+     * @body {Object} - The data to update a comment.
+    */
+    this.router.patch('/comment/react/:id/:reaction', this.auth(), validate(validReaction), reaction(this));
 
     // /**
     //  * DELETE /comment/:id
