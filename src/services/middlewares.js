@@ -70,7 +70,7 @@ module.exports.errorMiddleware = function errorMiddleware({ dataPath = path.reso
       .catch((fileErr) => {
         res.status(500).send({ message: 'Something went wrong' });
         console.log(fileErr);
-        if (config.isProduction) console.log('Internal server error:\n', err);
+        if (config.RUNNING === 'prod') console.log('Internal server error:\n', err);
       });
   };
 };
