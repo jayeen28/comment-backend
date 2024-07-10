@@ -2,13 +2,13 @@
  * Find multiple documents in a specified MongoDB collection.
  * @param {Object} options - An object with the following properties:
  * @param {string} options.table - The name of the collection to search.
- * @param {Object} [options.key={}] - An object with key-value pairs to use as a filter for the search.
- *   - allowedQuery (Set): A set of allowed query keys. If any provided query key is not in this set, the function will reject with an error.
+ * @param {Object} [options.payload={}] - An object with payload-value pairs to use as a filter for the search.
+ *   - allowedQuery (Set): A set of allowed query keys. If any provided query payload is not in this set, the function will reject with an error.
  *   - paginate (boolean): If true, the function will return a paginated result. If false, it will return all matching documents.
  *   - populate (Object): An object with the following properties:
  *     - path (string): The field to populate.
  *     - select (string): A space-separated string of fields to select.
- *   - query (Object): An object with key-value pairs representing queries to filter the search by.
+ *   - query (Object): An object with payload-value pairs representing queries to filter the search by.
  *     - sortBy (string): A string in the format "field:order", where "field" is the field to sort by and "order" is either "asc" or "desc".
  *     - search (string): A string to search for in the collection.
  *     - page (number): The page number to return.
@@ -18,7 +18,7 @@
  * @example
  * const result = await find({
  *   table: 'users',
- *   key: {
+ *   payload: {
  *     allowedQuery: new Set(['sortBy', 'search']),
  *     paginate: true,
  *     populate: { path: 'profile', select: 'name' },
@@ -26,41 +26,41 @@
  *   }
  * });
  */
-module.exports.find = ({ table, key = {} }) => new Promise((resolve, reject) => {
-  const queryKeys = Object.keys(key?.query || {});
-  const noPaginate = key.paginate === false;
-  key.options = noPaginate ?
-    { sort: {}, ...key?.query?.limit && { limit: key?.query?.limit } } :
+module.exports.find = ({ table, payload = {} }) => new Promise((resolve, reject) => {
+  const queryKeys = Object.keys(payload?.query || {});
+  const noPaginate = payload.paginate === false;
+  payload.options = noPaginate ?
+    { sort: {}, ...payload?.query?.limit && { limit: payload?.query?.limit } } :
     {
-      ...key.populate && { populate: { ...key.populate } },
-      page: key?.query?.page || 0,
-      limit: key?.query?.limit || 10,
-      sort: { ...!key?.query?.sortBy && { createdAt: -1 } }
+      ...payload.populate && { populate: { ...payload.populate } },
+      page: payload?.query?.page || 0,
+      limit: payload?.query?.limit || 10,
+      sort: { ...!payload?.query?.sortBy && { createdAt: -1 } }
     };
 
   // prepare query object with provied queries to find.
   queryKeys.forEach(async k => {
-    if (typeof key?.query[k] === 'string' && key?.query[k].startsWith('{"') && key?.query[k].endsWith('}')) key.query[k] = JSON.parse(key?.query[k]);
+    if (typeof payload?.query[k] === 'string' && payload?.query[k].startsWith('{"') && payload?.query[k].endsWith('}')) payload.query[k] = JSON.parse(payload?.query[k]);
     if (k === 'sortBy') {
-      const parts = key?.query?.sortBy.split(':');
-      return key.options.sort[parts[0]] = parts[1] === 'desc' ? -1 : 1;
+      const parts = payload?.query?.sortBy.split(':');
+      return payload.options.sort[parts[0]] = parts[1] === 'desc' ? -1 : 1;
     }
     if (k === 'id') {
-      key._id = key?.query?.id;
-      return delete key?.query?.id;
+      payload._id = payload?.query?.id;
+      return delete payload?.query?.id;
     }
-    key[k] = key?.query[k];
+    payload[k] = payload?.query[k];
   });
 
   const method = noPaginate ? 'find' : 'paginate';
-  const options = key.options;
-  const populate = key.populate;
-  delete key.allowedQuery;
-  delete key.populate;
-  delete key.paginate;
-  delete key.options;
-  delete key?.query;
-  const args = [key, ...noPaginate ? [null] : [], options];
+  const options = payload.options;
+  const populate = payload.populate;
+  delete payload.allowedQuery;
+  delete payload.populate;
+  delete payload.paginate;
+  delete payload.options;
+  delete payload?.query;
+  const args = [payload, ...noPaginate ? [null] : [], options];
   // May break
   resolve(table[method](...args)[noPaginate ? 'populate' : 'then'](populate))
     .then(res => resolve(res))
@@ -71,15 +71,15 @@ module.exports.find = ({ table, key = {} }) => new Promise((resolve, reject) => 
  * Find a single document in a specified MongoDB collection.
  * @param {Object} options - An object with the following properties:
  * @param {string} options.table - The name of the collection to search.
- * @param {Object} [options.key={}] - An object with key-value pairs to use as a filter for the search.
+ * @param {Object} [options.payload={}] - An object with payload-value pairs to use as a filter for the search.
  * @returns {Promise} A promise that resolves with the found document or null if no matching document is found, or rejects with an error if there is an issue with the query?.
  * @example
- * const result = await findOne({ table: 'users', key: { name: 'John' } });
+ * const result = await findOne({ table: 'users', payload: { name: 'John' } });
  */
-module.exports.findOne = async ({ table, key = {} }) => new Promise((resolve, reject) => {
-  if (key.id) key._id = key.id; delete key.id;
-  if (Object.keys(key).length < 1) resolve(null);
-  table.findOne(key).populate(key.populate?.path, key.populate?.select?.split(' '))
+module.exports.findOne = async ({ table, payload = {} }) => new Promise((resolve, reject) => {
+  if (payload.id) payload._id = payload.id; delete payload.id;
+  if (Object.keys(payload).length < 1) resolve(null);
+  table.findOne(payload).populate(payload.populate?.path, payload.populate?.select?.split(' '))
     .then(res => resolve(res))
     .catch(e => reject(e));
 });
@@ -88,22 +88,22 @@ module.exports.findOne = async ({ table, key = {} }) => new Promise((resolve, re
  * Create a new document in a specified MongoDB collection.
  * @param {Object} options - An object with the following properties:
  * @param {string} options.table - The name of the collection to create the document in.
- * @param {Object} options.key - An object with key-value pairs representing the fields and values of the new document.
- * @param {Object} [options.key.populate] - An object with the following properties:
+ * @param {Object} options.payload - An object with payload-value pairs representing the fields and values of the new document.
+ * @param {Object} [options.payload.populate] - An object with the following properties:
  *   - path (string): The field to populate.
  *   - select (string): A space-separated string of fields to select.
  * @returns {Promise} A promise that resolves with the created document, or rejects with an error if there is an issue with the creation.
  * @example
  * const result = await create({
  *   table: 'users',
- *   key: { name: 'John', age: 30, populate: { path: 'profile', select: 'name' } }
+ *   payload: { name: 'John', age: 30, populate: { path: 'profile', select: 'name' } }
  * });
  */
-module.exports.create = async ({ table, key }) => {
+module.exports.create = async ({ table, payload }) => {
   try {
-    const elem = await new table(key);
+    const elem = await new table(payload);
     const res = await elem.save();
-    key.populate && await res.populate(key.populate);
+    payload.populate && await res.populate(payload.populate);
     return res;
   } catch (e) {
     console.log(e);
@@ -114,9 +114,9 @@ module.exports.create = async ({ table, key }) => {
  * Update an existing document in a specified MongoDB collection.
  * @param {Object} options - An object with the following properties:
  * @param {string} options.table - The name of the collection to update the document in.
- * @param {Object} options.key - An object with key-value pairs representing the fields to update and their new values.
+ * @param {Object} options.payload - An object with payload-value pairs representing the fields to update and their new values.
  *   - id (string): The ID of the document to update.
- *   - body (Object): An object with key-value pairs representing the fields to update and their new values.
+ *   - body (Object): An object with payload-value pairs representing the fields to update and their new values.
  *   - populate (Object): An object with the following properties:
  *     - path (string): The field to populate.
  *     - select (string): A space-separated string of fields to select.
@@ -124,17 +124,17 @@ module.exports.create = async ({ table, key }) => {
  * @example
  * const result = await update({
  *   table: 'users',
- *   key: { id: '123', body: { name: 'John', age: 30 }, populate: { path: 'profile', select: 'name' } }
+ *   payload: { id: '123', body: { name: 'John', age: 30 }, populate: { path: 'profile', select: 'name' } }
  * });
  */
-module.exports.update = async ({ table, key }) => {
+module.exports.update = async ({ table, payload }) => {
   try {
-    if (key.id) key._id = key.id; delete key.id;
-    const element = await table.findOne(key);
+    if (payload.id) payload._id = payload.id; delete payload.id;
+    const element = await table.findOne(payload);
     if (!element) return Promise.resolve(element);
-    Object.keys(key.body || {}).forEach(param => element[param] = key.body[param]);
+    Object.keys(payload.body || {}).forEach(param => element[param] = payload.body[param]);
     const res = await element.save();
-    key.populate && await res.populate(key.populate?.path, key.populate?.select?.split(' '));
+    payload.populate && await res.populate(payload.populate?.path, payload.populate?.select?.split(' '));
     return Promise.resolve(element);
   }
   catch (e) { return Promise.reject(e); }
@@ -142,23 +142,23 @@ module.exports.update = async ({ table, key }) => {
 
 
 /**
- * remove - Removes an element from the specified table that matches the provided key.
+ * remove - Removes an element from the specified table that matches the provided payload.
  *
  * @param {Object} options - An object containing the following fields:
  *   - table {string}: The name of the table to remove the element from.
- *   - key {Object}: The key to use to identify the element to remove.
+ *   - payload {Object}: The payload to use to identify the element to remove.
  * @return {Promise} A promise that resolves with the removed element if it was found and removed successfully,
  *   or with `null` if no element was found. Rejects with an error if there was an issue removing the element.
  */
 module.exports.remove = async (target) => {
-  const { table, key, _id } = target;
+  const { table, payload, _id } = target;
   try {
     if (_id) {//if mongodb instance found then delete with obj.remove method.
       await target.remove();
       return Promise.resolve(target);
     }
-    if (key.id) key._id = key.id; delete key.id;
-    const element = await table.findOne(key);
+    if (payload.id) payload._id = payload.id; delete payload.id;
+    const element = await table.findOne(payload);
     if (!element) return Promise.resolve(element);
     await element.remove();
     return Promise.resolve(element);
@@ -174,18 +174,18 @@ module.exports.remove = async (target) => {
  * @return {Promise} A promise that resolves with an object containing information about the deleted elements.
  *   Rejects with an error if there was an issue deleting the elements.
  */
-module.exports.removeAll = async ({ table, key }) => {
+module.exports.removeAll = async ({ table, payload }) => {
   try {
-    const res = await table.deleteMany(key);
+    const res = await table.deleteMany(payload);
     return Promise.resolve(res);
   }
   catch (e) { Promise.reject(e); }
 };
 
 
-module.exports.updateMany = async ({ table, key }) => {
+module.exports.updateMany = async ({ table, payload }) => {
   try {
-    const { filter, update, options, callback } = key;
+    const { filter, update, options, callback } = payload;
     const res = await table.updateMany(filter, update, options, callback);
     return Promise.resolve(res);
   }
@@ -214,6 +214,6 @@ module.exports.populate = async (data, payload = {}) => await data.populate(payl
 
 module.exports.sort = async (data, payload = {}) => await data.sort(payload);
 
-module.exports.aggr = async ({ table, key }) => await table.aggregate(key);
+module.exports.aggr = async ({ table, payload }) => await table.aggregate(payload);
 
 module.exports.bulkCreate = ({ table, docs }) => table.insertMany(docs);
