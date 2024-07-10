@@ -48,3 +48,14 @@ module.exports.getAll = ({ db }) => async (req, res, next) => {
         });
     } catch (e) { next(e) }
 };
+
+module.exports.remove = ({ db }) => async (req, res, next) => {
+    try {
+        const { id: _id } = req.params;
+        const removeRes = await db.remove({ table: Comment, payload: { _id, user: req.user.id } });
+        if (removeRes.deletedCount === 0) return res.status(404).send({ message: 'Comment not found' });
+        await db.removeAll({ table: Comment, payload: { replyOf: _id } });
+        return res.status(200).send({ message: "Comment removed" });
+
+    } catch (e) { next(e) }
+}

@@ -33,4 +33,10 @@ module.exports.validGetAll = {
         replyOf: joi.string(),
         sort: joi.string(),
     })
-}
+};
+
+module.exports.validRemove = {
+    params: joi.object().keys({
+        id: joi.string().required(),
+    })
+};

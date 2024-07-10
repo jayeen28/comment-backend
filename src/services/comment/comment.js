@@ -51,12 +51,12 @@ function commentApi() {
     */
     this.router.patch('/comment/react/:id/:reaction', this.auth(), validate(validReaction), reaction(this));
 
-    // /**
-    //  * DELETE /comment/:id
-    //  * @description This route is used to remove a comment.
-    //  * @response {Object} 200 - The removed comment.
-    // */
-    // this.router.delete('/comment/:id', remove(this));
+    /**
+     * DELETE /comment/:id
+     * @description This route is used to remove a comment.
+     * @response {Object} 200 - The removed comment.
+    */
+    this.router.delete('/comment/:id', this.auth(), remove(this));
 }
 
 /**

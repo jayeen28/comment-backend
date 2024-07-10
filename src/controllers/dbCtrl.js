@@ -65,21 +65,12 @@ module.exports.updateWithSave = async ({ table, payload }) => {
 };
 
 module.exports.remove = async (target) => {
-  const { table, payload, _id } = target;
-  if (_id) {//if mongodb instance found then delete with obj.remove method.
-    await target.remove();
-    return target;
-  }
-  if (payload.id) payload._id = payload.id; delete payload.id;
-  const element = await table.findOne(payload);
-  if (!element) return null;
-  await element.remove();
-  return element;
+  const { table, payload } = target;
+  return table.deleteOne(payload);
 };
 
 module.exports.removeAll = async ({ table, payload }) => {
-  const res = await table.deleteMany(payload);
-  return res;
+  return await table.deleteMany(payload);
 };
 
 
