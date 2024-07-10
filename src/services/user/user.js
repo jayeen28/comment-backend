@@ -1,4 +1,6 @@
+const { validate } = require('../middlewares');
 const { register } = require('./user.entity');
+const { validateUserRegister } = require('./user.validate');
 
 /**
  * INSTRUCTIONS:
@@ -11,12 +13,14 @@ const { register } = require('./user.entity');
 function userApi() {
 
   /**
-   * POST /user/register/:role
+   * POST /user/register
    * @description This route is used to create a user.
    * @response {Object} 201 - The new user.
+   * @respose {Object} 400 - If somthing is wrong from the client side.
+   * @respose {Object} 500 - If somthing is wrong from the backend.
    * @body {Object} - The data to create a user.
   */
-  this.router.post('/user/register/:role', register(this));
+  this.router.post('/user/register', validate(validateUserRegister), register(this));
 }
 
 /**

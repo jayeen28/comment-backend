@@ -11,7 +11,6 @@ const { Server } = require('socket.io');
 const startupMiddlewares = require('./startupMiddlewares');
 const EventEmitter = require('events');
 const hooks = require('./hooks');
-const injectUtils = require('./utils');
 
 module.exports = class Falcon {
   /**
@@ -48,7 +47,7 @@ module.exports = class Falcon {
 
     /**
      * It is used to store all the app states.
-     * @member {object}
+     * @member {string}
      */
     this.dataPath = path.join(this.appPath, 'data', 'backend');
 
@@ -103,9 +102,6 @@ module.exports = class Falcon {
           credentials: true
         }
       });
-
-      // Inject the utils
-      this.utils = injectUtils(this);
 
       // Call hooks setup
       hooks.call(this);

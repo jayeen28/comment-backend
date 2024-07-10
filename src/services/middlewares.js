@@ -4,14 +4,15 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const pick = require('../utils/cherryPick');
 const joi = require('joi');
+const localDateTimeParts = require('../utils/localDateTimeParts');
 
 // Middleware function to handle errors
-module.exports.errorMiddleware = function errorMiddleware({ dataPath = path.resolve(), config, utils }) {
+module.exports.errorMiddleware = function errorMiddleware({ dataPath = path.resolve(), config }) {
 
   // eslint-disable-next-line no-unused-vars
   return async (err, req, res, next) => {
     // Extract year, month, and day from current date
-    const [year, month, day, hours, minutes, seconds] = utils.localDateTimeParts('Asia/Dhaka').map((n) => n.toString());
+    const [year, month, day, hours, minutes, seconds] = localDateTimeParts('Asia/Dhaka').map((n) => n.toString());
 
     // Create directory for storing server error logs
     const apiErrorDir = path.join(dataPath, 'server_error', year, month);
