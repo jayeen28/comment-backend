@@ -1,0 +1,10 @@
+node_modules
+yarn.lock
+package-lock.json
+settings
+ssl
+.env
+prismadb
+dist
+migrations
+data
