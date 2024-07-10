@@ -14,7 +14,7 @@ module.exports.update = ({ db }) => async (req, res, next) => {
     try {
         const { id: _id } = req.params;
         req.body.edited = true;
-        const comment = await db.updateWithSave({ table: Comment, payload: { query: { _id }, update: req.body } });
+        const comment = await db.updateWithSave({ table: Comment, payload: { query: { _id, user: req.user.id }, update: req.body } });
         if (!comment) return res.status(404).send({ message: 'Comment not found' });
         else return res.status(200).send(comment);
     } catch (e) { next(e) }
