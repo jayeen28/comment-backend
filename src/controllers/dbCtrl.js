@@ -76,13 +76,10 @@ module.exports.find = ({ table, payload = {} }) => new Promise((resolve, reject)
  * @example
  * const result = await findOne({ table: 'users', payload: { name: 'John' } });
  */
-module.exports.findOne = async ({ table, payload = {} }) => new Promise((resolve, reject) => {
-  if (payload.id) payload._id = payload.id; delete payload.id;
+module.exports.findOne = async ({ table, payload = {} }) => {
   if (Object.keys(payload).length < 1) resolve(null);
-  table.findOne(payload).populate(payload.populate?.path, payload.populate?.select?.split(' '))
-    .then(res => resolve(res))
-    .catch(e => reject(e));
-});
+  return table.findOne(payload).populate(payload.populate?.path, payload.populate?.select?.split(' '));
+};
 
 /**
  * Create a new document in a specified MongoDB collection.

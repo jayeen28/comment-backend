@@ -11,6 +11,7 @@ const { Server } = require('socket.io');
 const startupMiddlewares = require('./startupMiddlewares');
 const EventEmitter = require('events');
 const hooks = require('./hooks');
+const { authHandler } = require('./services/middlewares');
 
 module.exports = class Falcon {
   /**
@@ -21,6 +22,18 @@ module.exports = class Falcon {
    * @param {object} _db - Database instance.
    */
   constructor(_settings, _express, _db) {
+    /**
+     * Configuration settings for the API.
+     * @member {object}
+     */
+    this.config = _settings;
+
+    /**
+     * Database operations module.
+     * @member {object}
+     */
+    this.db = _db;
+
     /**
      * The Express.js instance.
      * @member {object}
@@ -40,6 +53,12 @@ module.exports = class Falcon {
     this.router = new this.express.Router();
 
     /**
+     * This middleware is for handling user authentication.
+     * @member {function}
+     */
+    this.auth = authHandler(this);
+
+    /**
      * The absolute path to the application.
      * @member {string}
      */
@@ -50,18 +69,6 @@ module.exports = class Falcon {
      * @member {string}
      */
     this.dataPath = path.join(this.appPath, 'data', 'backend');
-
-    /**
-     * Configuration settings for the API.
-     * @member {object}
-     */
-    this.config = _settings;
-
-    /**
-     * Database operations module.
-     * @member {object}
-     */
-    this.db = _db;
 
     /**
      * Necessary file operations.

@@ -29,4 +29,10 @@ module.exports.login = ({ db, config }) => async (req, res, next) => {
     }
     else return res.status(401).send({ message: 'Unauthorized' });
   } catch (e) { next(e) }
-}
+};
+
+module.exports.me = () => (req, res, next) => {
+  try {
+    return res.status(200).send(req.user);
+  } catch (e) { next(e) }
+};

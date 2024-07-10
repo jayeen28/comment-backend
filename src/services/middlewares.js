@@ -5,6 +5,8 @@ const { v4: uuidv4 } = require('uuid');
 const pick = require('../utils/cherryPick');
 const joi = require('joi');
 const localDateTimeParts = require('../utils/localDateTimeParts');
+const User = require('./user/user.schema');
+const jwt = require('jsonwebtoken');
 
 // Middleware function to handle errors
 module.exports.errorMiddleware = function errorMiddleware({ dataPath = path.resolve(), config }) {
@@ -71,6 +73,26 @@ module.exports.errorMiddleware = function errorMiddleware({ dataPath = path.reso
         if (config.isProduction) console.log('Internal server error:\n', err);
       });
   };
+};
+
+module.exports.authHandler = function ({ config, db }) {
+  return () => {
+    return async function (req, res, next) {
+      try {
+        const token = req.cookies?.[config.AUTH_COOKIE_KEY] || req.headers.cookie;
+
+        if (!token) return res.status(401).send({ message: 'Unauthorized' });
+        const data = jwt.verify(token, config.JWT_SECRET);
+        const user = await db.findOne({ table: User, payload: { _id: data._id } });
+        if (!user) return res.status(401).send({ message: 'Unauthorized' });
+        req.user = user;
+        next();
+      }
+      catch (e) {
+        next(e);
+      }
+    }
+  }
 }
 
 /**

@@ -1,5 +1,5 @@
 const { validate } = require('../middlewares');
-const { register, login } = require('./user.entity');
+const { register, login, me } = require('./user.entity');
 const { validateUserRegister, validLogin } = require('./user.validate');
 
 /**
@@ -30,6 +30,15 @@ function userApi() {
    * @respose {Object} 500 - If somthing is wrong from the backend.
    */
   this.router.post('/user/login', validate(validLogin), login(this));
+
+  /**
+   * GET /user/me
+   * @description This route is for getting user's own data using auth token.
+   * @response {Object} 200 - If a valid token found.
+   * @response {Object} 401 - If token is not valid or token not found.
+   * @respose {Object} 500 - If somthing is wrong from the backend.
+   */
+  this.router.get('/user/me', this.auth(), me(this));
 }
 
 /**
