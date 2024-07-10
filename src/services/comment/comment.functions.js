@@ -1,7 +1,12 @@
+const mongoose = require('mongoose');
 module.exports.buildPipeLine = function ({ post = '1', sort = 'createdAt', skip = 0, limit = 5, query = {} } = {}) {
+
     return ([
         {
-            $match: query
+            $match: {
+                ...query,
+                replyOf: { $eq: query.replyOf ? new mongoose.Types.ObjectId(query.replyOf) : null },
+            }
         },
         {
             $lookup: {
@@ -15,7 +20,10 @@ module.exports.buildPipeLine = function ({ post = '1', sort = 'createdAt', skip 
             $unwind: '$comment'
         },
         {
-            $unwind: '$reactions'
+            $unwind: {
+                path: '$reactions',
+                preserveNullAndEmptyArrays: true
+            }
         },
         {
             $group: {
@@ -51,6 +59,14 @@ module.exports.buildPipeLine = function ({ post = '1', sort = 'createdAt', skip 
                         $limit: limit
                     },
                     {
+                        $lookup: {
+                            from: 'comments',
+                            localField: '_id',
+                            foreignField: 'replyOf',
+                            as: 'replies'
+                        }
+                    },
+                    {
                         $project: {
                             _id: '$_id',
                             user: '$comment.user',
@@ -63,7 +79,8 @@ module.exports.buildPipeLine = function ({ post = '1', sort = 'createdAt', skip 
                             reactions: '$comment.reactions',
                             createdAt: 1,
                             likes: 1,
-                            dislikes: 1
+                            dislikes: 1,
+                            replyCount: { $size: '$replies' }
                         }
                     }
                 ],
