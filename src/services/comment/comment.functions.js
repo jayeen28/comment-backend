@@ -5,6 +5,7 @@ module.exports.buildPipeLine = function ({ post = '1', sort = 'createdAt', skip 
         {
             $match: {
                 ...query,
+                post,
                 replyOf: { $eq: query.replyOf ? new mongoose.Types.ObjectId(query.replyOf) : null },
             }
         },
