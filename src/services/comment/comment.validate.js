@@ -9,3 +9,12 @@ module.exports.validComment = {
         replyOf: joi.string(),
     }
 };
+
+module.exports.validEdit = {
+    params: joi.object().keys({
+        id: joi.string().required(),
+    }),
+    body: {
+        content: joi.string().required().max(900),
+    }
+}
