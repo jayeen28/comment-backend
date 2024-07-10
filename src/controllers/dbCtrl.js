@@ -100,14 +100,10 @@ module.exports.findOne = async ({ table, payload = {} }) => new Promise((resolve
  * });
  */
 module.exports.create = async ({ table, payload }) => {
-  try {
-    const elem = await new table(payload);
-    const res = await elem.save();
-    payload.populate && await res.populate(payload.populate);
-    return res;
-  } catch (e) {
-    console.log(e);
-  }
+  const elem = await new table(payload);
+  const res = await elem.save();
+  payload.populate && await res.populate(payload.populate);
+  return res;
 };
 
 /**
@@ -128,16 +124,13 @@ module.exports.create = async ({ table, payload }) => {
  * });
  */
 module.exports.update = async ({ table, payload }) => {
-  try {
-    if (payload.id) payload._id = payload.id; delete payload.id;
-    const element = await table.findOne(payload);
-    if (!element) return Promise.resolve(element);
-    Object.keys(payload.body || {}).forEach(param => element[param] = payload.body[param]);
-    const res = await element.save();
-    payload.populate && await res.populate(payload.populate?.path, payload.populate?.select?.split(' '));
-    return Promise.resolve(element);
-  }
-  catch (e) { return Promise.reject(e); }
+  if (payload.id) payload._id = payload.id; delete payload.id;
+  const element = await table.findOne(payload);
+  if (!element) return null;
+  Object.keys(payload.body || {}).forEach(param => element[param] = payload.body[param]);
+  const res = await element.save();
+  payload.populate && await res.populate(payload.populate?.path, payload.populate?.select?.split(' '));
+  return element;
 };
 
 
@@ -152,18 +145,15 @@ module.exports.update = async ({ table, payload }) => {
  */
 module.exports.remove = async (target) => {
   const { table, payload, _id } = target;
-  try {
-    if (_id) {//if mongodb instance found then delete with obj.remove method.
-      await target.remove();
-      return Promise.resolve(target);
-    }
-    if (payload.id) payload._id = payload.id; delete payload.id;
-    const element = await table.findOne(payload);
-    if (!element) return Promise.resolve(element);
-    await element.remove();
-    return Promise.resolve(element);
+  if (_id) {//if mongodb instance found then delete with obj.remove method.
+    await target.remove();
+    return target;
   }
-  catch (e) { Promise.reject(e); }
+  if (payload.id) payload._id = payload.id; delete payload.id;
+  const element = await table.findOne(payload);
+  if (!element) return null;
+  await element.remove();
+  return element;
 };
 
 /**
@@ -175,21 +165,15 @@ module.exports.remove = async (target) => {
  *   Rejects with an error if there was an issue deleting the elements.
  */
 module.exports.removeAll = async ({ table, payload }) => {
-  try {
-    const res = await table.deleteMany(payload);
-    return Promise.resolve(res);
-  }
-  catch (e) { Promise.reject(e); }
+  const res = await table.deleteMany(payload);
+  return res;
 };
 
 
 module.exports.updateMany = async ({ table, payload }) => {
-  try {
-    const { filter, update, options, callback } = payload;
-    const res = await table.updateMany(filter, update, options, callback);
-    return Promise.resolve(res);
-  }
-  catch (err) { Promise.reject(err); }
+  const { filter, update, options, callback } = payload;
+  const res = await table.updateMany(filter, update, options, callback);
+  return res;
 };
 
 /**

@@ -1,6 +1,6 @@
 const { validate } = require('../middlewares');
-const { register } = require('./user.entity');
-const { validateUserRegister } = require('./user.validate');
+const { register, login } = require('./user.entity');
+const { validateUserRegister, validLogin } = require('./user.validate');
 
 /**
  * INSTRUCTIONS:
@@ -21,6 +21,15 @@ function userApi() {
    * @body {Object} - The data to create a user.
   */
   this.router.post('/user/register', validate(validateUserRegister), register(this));
+
+  /**
+   * POST /user/login
+   * @description This route is for login users by checking credentials.
+   * @response {Object} 200 - If credentials are valid.
+   * @response {Object} 401 - If credentials are not valid.
+   * @respose {Object} 500 - If somthing is wrong from the backend.
+   */
+  this.router.post('/user/login', validate(validLogin), login(this));
 }
 
 /**
