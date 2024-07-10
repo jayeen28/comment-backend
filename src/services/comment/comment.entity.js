@@ -1,3 +1,5 @@
+const { getSkip, getPaginationData } = require('../../utils/paginationHelper');
+const { buildPipeLine } = require('./comment.functions');
 const Comment = require('./comment.schema')
 
 module.exports.create = ({ db }) => async (req, res, next) => {
@@ -30,5 +32,19 @@ module.exports.reaction = ({ db }) => async (req, res, next) => {
         });
         if (updateRes.modifiedCount === 1) return res.status(200).send({ message: 'Reaction added' });
         else return res.status(404).send({ message: 'Reaction not found' });
+    } catch (e) { next(e) }
+};
+
+module.exports.getAll = ({ db }) => async (req, res, next) => {
+    try {
+        const { page = 1, limit: queryLimit = 5, ...restQueries } = req.query;
+        const { skip, limit } = getSkip(page, queryLimit);
+        const aggregationPipleline = buildPipeLine({ skip, limit, query: { post: "1", ...restQueries } });
+        const [{ docs = [], totalDocs = 0 } = {}] = (await db.aggr({ table: Comment, payload: aggregationPipleline }) || []);
+        const pagination = getPaginationData(page, totalDocs, limit);
+        return res.status(200).send({
+            docs,
+            pagination
+        });
     } catch (e) { next(e) }
 };

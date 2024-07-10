@@ -89,12 +89,12 @@ module.exports.updateMany = async ({ table, payload }) => {
   return res;
 };
 
-module.exports.save = async (data) => await data.save();
+module.exports.save = (data) => data.save();
 
-module.exports.populate = async (data, payload = {}) => await data.populate(payload);
+module.exports.populate = (data, payload = {}) => data.populate(payload);
 
-module.exports.sort = async (data, payload = {}) => await data.sort(payload);
+module.exports.sort = (data, payload = {}) => data.sort(payload);
 
-module.exports.aggr = async ({ table, payload }) => await table.aggregate(payload);
+module.exports.aggr = ({ table, payload }) => table.aggregate(payload);
 
 module.exports.bulkCreate = ({ table, docs }) => table.insertMany(docs);

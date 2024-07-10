@@ -25,3 +25,11 @@ module.exports.validReaction = {
         id: joi.string().required(),
     })
 };
+
+module.exports.validGetAll = {
+    query: joi.object().keys({
+        page: joi.number(),
+        limit: joi.number(),
+        replyOf: joi.string(),
+    })
+}

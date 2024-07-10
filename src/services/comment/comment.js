@@ -1,6 +1,6 @@
 const { validate } = require('../middlewares');
 const { create, get, getAll, update, remove, reaction } = require('./comment.entity');
-const { validComment, validEdit, validReaction } = require('./comment.validate');
+const { validComment, validEdit, validReaction, validGetAll } = require('./comment.validate');
 
 /**
  * INSTRUCTIONS:
@@ -20,13 +20,13 @@ function commentApi() {
     */
     this.router.post('/comment/:post', this.auth(), validate(validComment), create(this));
 
-    // /**
-    //  * GET /comment
-    //  * @description This route is used to get all comments.
-    //  * @response {Object} 200 - The paginated comments.
-    //  * @response {Array} 200 - The comments without paginations.
-    // */
-    // this.router.get('/comment', getAll(this));
+    /**
+     * GET /comment
+     * @description This route is used to get all comments.
+     * @response {Object} 200 - The paginated comments.
+     * @response {Array} 200 - The comments with pagination.
+    */
+    this.router.get('/comment', this.auth(), validate(validGetAll), getAll(this));
 
     // /**
     //  * GET /comment/:id
