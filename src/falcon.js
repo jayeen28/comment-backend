@@ -62,7 +62,7 @@ module.exports = class Falcon {
      * Database operations module.
      * @member {object}
      */
-    this.db = _db.promise();
+    this.db = _db;
 
     /**
      * Necessary file operations.

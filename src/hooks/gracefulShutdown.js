@@ -5,6 +5,8 @@
  * @module gracefulShutdown
  */
 
+const { default: mongoose } = require("mongoose");
+
 /**
  * Register event handlers for graceful shutdown.
  */
@@ -14,17 +16,14 @@ module.exports = function () {
    *
    * @param {Error} signal - The shutdown signal.
    */
-  function handleShutdownEvent(signal) {
+  async function handleShutdownEvent(signal) {
     try {
       // Log the original error or event object.
       console.log(`Process shutdown signal: ${signal}`);
 
       //****** Perform any necessary cleanup or finalization here. ******/
-      this.db.end(function (err) {
-        if (err) console.log(err);
-        else console.log('Database disconnected');
-      });
-
+      await mongoose.connection.close();
+      console.log('Mongodb closed');
       this.server.close(() => {
         console.log('Server closed');
       });
