@@ -37,9 +37,9 @@ module.exports.reaction = ({ db }) => async (req, res, next) => {
 
 module.exports.getAll = ({ db }) => async (req, res, next) => {
     try {
-        const { page = 1, limit: queryLimit = 5, ...restQueries } = req.query;
+        const { page = 1, limit: queryLimit = 5, sort, ...restQueries } = req.query;
         const { skip, limit } = getSkip(page, queryLimit);
-        const aggregationPipleline = buildPipeLine({ skip, limit, query: { post: "1", ...restQueries } });
+        const aggregationPipleline = buildPipeLine({ skip, limit, sort, query: { post: "1", ...restQueries } });
         const [{ docs = [], totalDocs = 0 } = {}] = (await db.aggr({ table: Comment, payload: aggregationPipleline }) || []);
         const pagination = getPaginationData(page, totalDocs, limit);
         return res.status(200).send({

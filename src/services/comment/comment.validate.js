@@ -31,5 +31,6 @@ module.exports.validGetAll = {
         page: joi.number(),
         limit: joi.number(),
         replyOf: joi.string(),
+        sort: joi.string(),
     })
 }
