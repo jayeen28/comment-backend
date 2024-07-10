@@ -71,6 +71,12 @@ module.exports = class Falcon {
     this.dataPath = path.join(this.appPath, 'data', 'backend');
 
     /**
+     * It is used to store all the files.
+     * @member {string}
+     */
+    this.filePath = path.join(this.dataPath, 'files');
+
+    /**
      * Necessary file operations.
      * @member {object}
      */

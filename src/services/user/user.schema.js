@@ -3,7 +3,8 @@ const { model, Schema } = require('mongoose');
 const userSchema = new Schema({
     full_name: { type: String, required: true },
     email: { type: String, unique: true, required: true },
-    password: { type: String, required: true }
+    password: { type: String, required: true },
+    avatar_file_id: { type: Schema.Types.ObjectId }
 });
 
 userSchema.methods.toJSON = function () {

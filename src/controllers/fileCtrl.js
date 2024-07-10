@@ -4,7 +4,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { randomBytes } = require('crypto');
+const { v4: uuid } = require('uuid');
 
 
 /**
@@ -12,15 +12,6 @@ const { randomBytes } = require('crypto');
  * @constant {string[]}
  */
 const ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'svg', 'gif', 'avif', 'webp'];
-
-/**
- * Directory where files are stored.
- * @constant {string}
- */
-const fileDir = path.join(path.resolve(), 'data', 'backend', 'files');
-
-// Ensure the file directory exists, creating it if necessary.
-if (!fs.existsSync(fileDir)) fs.mkdirSync(fileDir, { recursive: true });
 
 /**
  * Asynchronous function to download an image from a provided URL, save it to a local directory,
@@ -32,7 +23,7 @@ if (!fs.existsSync(fileDir)) fs.mkdirSync(fileDir, { recursive: true });
  * @throws {Error} - Throws an error if the provided link lacks a file extension, has an invalid file extension,
  * or if any other error occurs during the download and save process.
  */
-async function fileUp(link) {
+async function fileUp(link, fileDir) {
   try {
     if (!link) {
       return null;
@@ -48,9 +39,10 @@ async function fileUp(link) {
       throw new Error('Invalid file extension.');
     }
 
-    const fileName = randomBytes(16).toString('hex') + '.' + ext;
+    const fileName = uuid() + '.' + ext;
     const buffer = await fs.promises.readFile(link);
     const filePath = path.join(fileDir, fileName);
+
     await fs.promises.writeFile(filePath, buffer);
 
     return fileName;
@@ -61,52 +53,13 @@ async function fileUp(link) {
 }
 
 /**
- * Asynchronous function to write a chunk of data to a file.
- *
- * @param {object} options - Options for writing the chunk.
- * @param {string} options.fileNametoSave - The name of the file to save the chunk.
- * @param {string} options.chunk - The data chunk to append to the file.
- * @param {string} options.appendFlag - The append flag ('a' for append, 'w' for write).
- * @returns {Promise<boolean>} - A Promise that resolves to true if the chunk is written successfully, or false on error.
- */
-function writeChunk({ fileNametoSave, chunk, appendFlag }) {
-  return new Promise((resolve, reject) => {
-    fs.appendFile(path.join(fileDir, fileNametoSave), Buffer.from(chunk, 'base64'), { flag: appendFlag }, (err) => {
-      if (err) {
-        return reject('Error writing chunk to file');
-      }
-      return resolve(true);
-    });
-  });
-}
-
-/**
- * Asynchronous function to check the existence of multiple files.
- *
- * @param {object[]} files - An array of file objects to check.
- * @param {string} files[].location - The relative location of each file.
- * @returns {Promise<boolean>} - A Promise that resolves to true if all files exist, or false if any file is missing.
- * @throws {Error} - Throws an error if the files parameter is invalid or empty.
- */
-async function allFileExist(files) {
-  if (!files?.length) {
-    throw new Error('Invalid or empty file list.');
-  }
-
-  return files.every(f => {
-    const filePath = path.join(fileDir, f.location);
-    return fs.existsSync(filePath);
-  });
-}
-
-/**
  * Asynchronous function to remove multiple files.
  *
  * @param {object[]} files - An array of file objects to remove.
  * @param {string} files[].location - The relative location of each file.
  * @returns {Promise<boolean>} - A Promise that resolves to true if all files are removed successfully, or false on error.
  */
-async function rmFiles(files) {
+async function rmFiles(files, fileDir) {
   try {
     await Promise.all(files.map(async ({ location }) => {
       const filePath = path.join(fileDir, location);
@@ -119,6 +72,6 @@ async function rmFiles(files) {
     console.error('Error removing files:', error);
     return false;
   }
-}
+};
 
-module.exports = { rmFiles, allFileExist, fileUp, writeChunk, fileDir, ALLOWED_EXTENSIONS };
+module.exports = { rmFiles, fileUp, ALLOWED_EXTENSIONS };
