@@ -1,11 +1,5 @@
 const mongoose = require('mongoose');
 
-const sortValues = {
-    'createdAt': 1,
-    'likes': -1,
-    'dislikes': -1
-}
-
 module.exports.buildPipeLine = function ({ sort = 'createdAt', skip = 0, limit = 5, query = {} } = {}) {
 
     return ([
@@ -58,7 +52,7 @@ module.exports.buildPipeLine = function ({ sort = 'createdAt', skip = 0, limit =
             $facet: {
                 "docs": [
                     {
-                        $sort: { [sort]: sortValues[sort] }
+                        $sort: { [sort]: -1 }
                     },
                     {
                         $skip: skip

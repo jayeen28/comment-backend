@@ -5,8 +5,25 @@ const Comment = require('./comment.schema')
 module.exports.create = ({ db }) => async (req, res, next) => {
     try {
         const { post } = req.params;
-        const comment = await db.create({ table: Comment, payload: { ...req.body, post, user: req.user.id, reactions: [] } });
-        if (comment) return res.status(201).send(comment);
+        const comment = await db.create({
+            table: Comment, payload: {
+                ...req.body,
+                post,
+                user: req.user.id,
+                reactions: [],
+                populate: {
+                    path: 'user',
+                    select: 'avatar_file_id full_name'
+                }
+            }
+        });
+        if (comment) {
+            const rawComment = comment.toJSON();
+            rawComment.likes = 0;
+            rawComment.dislikes = 0;
+            rawComment.replyCount = 0;
+            return res.status(201).send(rawComment);
+        }
         else throw new Error('Comment not created');
     } catch (e) { next(e) }
 };
