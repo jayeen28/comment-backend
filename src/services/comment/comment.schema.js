@@ -2,7 +2,7 @@ const { model, Schema } = require('mongoose');
 
 const commentSchema = new Schema({
     user: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
-    post: { type: String, default: '1' },
+    post: { type: String, required: true },
     content: { type: String, required: true },
     reactions: [{
         element: { type: String, enum: ['like', 'dislike'], required: true },

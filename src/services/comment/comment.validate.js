@@ -32,6 +32,7 @@ module.exports.validGetAll = {
         limit: joi.number(),
         replyOf: joi.string(),
         sort: joi.string(),
+        post: joi.string().required(),
     })
 };
 

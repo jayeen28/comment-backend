@@ -4,7 +4,8 @@ const Comment = require('./comment.schema')
 
 module.exports.create = ({ db }) => async (req, res, next) => {
     try {
-        const comment = await db.create({ table: Comment, payload: { ...req.body, user: req.user.id, reactions: [] } });
+        const { post } = req.params;
+        const comment = await db.create({ table: Comment, payload: { ...req.body, post, user: req.user.id, reactions: [] } });
         if (comment) return res.status(201).send(comment);
         else throw new Error('Comment not created');
     } catch (e) { next(e) }
@@ -39,7 +40,7 @@ module.exports.getAll = ({ db }) => async (req, res, next) => {
     try {
         const { page = 1, limit: queryLimit = 5, sort, ...restQueries } = req.query;
         const { skip, limit } = getSkip(page, queryLimit);
-        const aggregationPipleline = buildPipeLine({ skip, limit, sort, query: { post: "1", ...restQueries } });
+        const aggregationPipleline = buildPipeLine({ skip, limit, sort, query: restQueries });
         const [{ docs = [], totalDocs = 0 } = {}] = (await db.aggr({ table: Comment, payload: aggregationPipleline }) || []);
         const pagination = getPaginationData(page, totalDocs, limit);
         return res.status(200).send({

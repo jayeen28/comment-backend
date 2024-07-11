@@ -6,13 +6,13 @@ const sortValues = {
     'dislikes': -1
 }
 
-module.exports.buildPipeLine = function ({ post = '1', sort = 'createdAt', skip = 0, limit = 5, query = {} } = {}) {
+module.exports.buildPipeLine = function ({ sort = 'createdAt', skip = 0, limit = 5, query = {} } = {}) {
 
     return ([
         {
             $match: {
                 ...query,
-                post,
+                post: query.post,
                 replyOf: { $eq: query.replyOf ? new mongoose.Types.ObjectId(query.replyOf) : null },
             }
         },
