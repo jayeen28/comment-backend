@@ -25,7 +25,7 @@ module.exports.login = ({ db, config }) => async (req, res, next) => {
         secure: config.RUNNING === 'prod' ? true : false,
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days from now
       });
-      return res.status(200).send({ message: 'Login successful' });
+      return res.status(200).send(user);
     }
     else return res.status(401).send({ message: 'Unauthorized' });
   } catch (e) { next(e) }
