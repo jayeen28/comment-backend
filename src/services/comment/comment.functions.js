@@ -79,6 +79,7 @@ module.exports.buildPipeLine = function ({ post = '1', sort = 'createdAt', skip 
                             _id: '$_id',
                             user: '$comment.user',
                             content: '$comment.content',
+                            post: '$comment.post',
                             user: {
                                 _id: '$user._id',
                                 fullname: '$user.full_name',
