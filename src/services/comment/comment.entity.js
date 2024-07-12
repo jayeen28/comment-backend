@@ -29,13 +29,16 @@ module.exports.create = ({ db, io }) => async (req, res, next) => {
     } catch (e) { next(e) }
 };
 
-module.exports.update = ({ db }) => async (req, res, next) => {
+module.exports.update = ({ db, io }) => async (req, res, next) => {
     try {
         const { id: _id } = req.params;
         req.body.edited = true;
         const comment = await db.updateWithSave({ table: Comment, payload: { query: { _id, user: req.user.id }, update: req.body } });
         if (!comment) return res.status(404).send({ message: 'Comment not found' });
-        else return res.status(200).send(comment);
+        else {
+            io.to('user').emit('comment_edited', { user_id: req.user.id, _id, content: comment.content });
+            return res.status(200).send(comment);
+        }
     } catch (e) { next(e) }
 };
 

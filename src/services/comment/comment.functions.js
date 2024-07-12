@@ -84,6 +84,7 @@ module.exports.buildPipeLine = function ({ sort = 'createdAt:desc', skip = 0, li
                                 full_name: '$user.full_name',
                                 avatar_file_id: '$user.avatar_file_id',
                             },
+                            edited: '$comment.edited',
                             reactions: '$comment.reactions',
                             createdAt: 1,
                             likes: 1,
