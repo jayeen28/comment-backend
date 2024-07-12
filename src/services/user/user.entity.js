@@ -11,6 +11,13 @@ module.exports.register = ({ db }) => async (req, res, next) => {
   } catch (e) { next(e) }
 };
 
+module.exports.logout = ({ config }) => async (req, res, next) => {
+  try {
+    res.clearCookie(config.AUTH_COOKIE_KEY);
+    return res.status(200).send({ message: 'Logout successful' });
+  } catch (e) { next(e) }
+};
+
 module.exports.login = ({ db, config }) => async (req, res, next) => {
   try {
     const { email, password } = req.body;

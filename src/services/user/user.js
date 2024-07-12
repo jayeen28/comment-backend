@@ -1,5 +1,5 @@
 const validate = require('../../middlewares/validateMiddleware');
-const { register, login, me } = require('./user.entity');
+const { register, login, me, logout } = require('./user.entity');
 const { validateUserRegister, validLogin } = require('./user.validate');
 
 /**
@@ -21,6 +21,15 @@ function userApi() {
    * @body {Object} - The data to create a user.
   */
   this.router.post('/user/register', validate(validateUserRegister), register(this));
+
+  /**
+   * POST /user/logout
+   * @description This route is for logging out users.
+   * @response {Object} 200 - If a valid token found and current token will be removed from browser.
+   * @response {Object} 401 - If token is not valid or token not found.
+   * @respose {Object} 500 - If somthing is wrong from the backend.
+   */
+  this.router.post('/user/logout', this.auth(), logout(this));
 
   /**
    * POST /user/login
