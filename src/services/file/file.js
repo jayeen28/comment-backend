@@ -25,7 +25,7 @@ function fileApi() {
      * @description This route is used to get a file.
      * @response {Object} 200 - The file.
     */
-    this.router.get('/file/:id', this.auth(), validate(validGetFile), get(this));
+    this.router.get('/file/:id', validate(validGetFile), get(this));
 }
 
 /**
