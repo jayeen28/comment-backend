@@ -1,4 +1,4 @@
-const { validate } = require('../middlewares');
+const validate = require('../../middlewares/validateMiddleware');
 const { create, get, getAll, update, remove, reaction } = require('./comment.entity');
 const { validComment, validEdit, validReaction, validGetAll } = require('./comment.validate');
 

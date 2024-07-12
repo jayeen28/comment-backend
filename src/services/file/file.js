@@ -1,5 +1,5 @@
 const { validUpload, validGetFile } = require('./file.validate');
-const { validate } = require('../middlewares');
+const validate = require('../../middlewares/validateMiddleware');
 const { create, get } = require('./file.entity');
 
 /**

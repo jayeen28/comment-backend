@@ -1,4 +1,4 @@
-const { validate } = require('../middlewares');
+const validate = require('../../middlewares/validateMiddleware');
 const { register, login, me } = require('./user.entity');
 const { validateUserRegister, validLogin } = require('./user.validate');
 

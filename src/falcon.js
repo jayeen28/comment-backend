@@ -8,10 +8,10 @@ const fs = require('fs');
 const services = require('./services');
 const fileCtrl = require('./controllers/fileCtrl');
 const { Server } = require('socket.io');
-const startupMiddlewares = require('./startupMiddlewares');
+const startupMiddlewares = require('./middlewares/startupMiddlewares');
 const EventEmitter = require('events');
 const hooks = require('./hooks');
-const { authHandler } = require('./services/middlewares');
+const authHandler = require('./middlewares/authMiddleware');
 
 module.exports = class Falcon {
   /**
