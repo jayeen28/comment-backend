@@ -24,7 +24,11 @@ module.exports = function () {
       //****** Perform any necessary cleanup or finalization here. ******/
       await mongoose.connection.close();
       console.log('Mongodb closed');
-      this.server.close(() => {
+      if (this.io) {
+        this.io.local.disconnectSockets();
+        this.io.close();
+      }
+      if (this.server) this.server.close(() => {
         console.log('Server closed');
       });
 

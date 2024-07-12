@@ -1,8 +1,8 @@
 const rateLimit = require("express-rate-limit");
 const cors = require('cors');
 const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
 const { parse: formDataParse } = require('express-form-data');
+const socketAuth = require("./socketAuth");
 
 module.exports = function () {
   const limiter = rateLimit({
@@ -17,10 +17,10 @@ module.exports = function () {
     methods: ['GET', 'HEAD', 'POST', 'PATCH', 'DELETE', 'PUT', 'OPTIONS'],
     credentials: true
   }));
-  this.app.use(cookieParser());
   this.app.use(morgan('common'));
   this.app.use(this.express.json());
   this.app.use(formDataParse());
   this.app.use(this.express.urlencoded({ extended: false }));
   this.app.use('/api', limiter, this.router);
+  this.io.use(socketAuth(this));
 }
