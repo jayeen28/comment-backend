@@ -42,7 +42,7 @@ module.exports.update = ({ db, io }) => async (req, res, next) => {
     } catch (e) { next(e) }
 };
 
-module.exports.reaction = ({ db }) => async (req, res, next) => {
+module.exports.reaction = ({ db, io }) => async (req, res, next) => {
     try {
         const { id: _id, reaction } = req.params;
         const updateRes = await db.rawUpdate({
@@ -53,7 +53,7 @@ module.exports.reaction = ({ db }) => async (req, res, next) => {
             }
         });
         if (updateRes.modifiedCount === 1) {
-
+            io.to('user').emit('reaction_added', { _id, user_id: req.user.id, reaction });
             return res.status(200).send({ message: 'Reaction added' });
         }
         else return res.status(404).send({ message: 'Reaction not found' });
