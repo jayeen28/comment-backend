@@ -1,7 +1,12 @@
 const mongoose = require('mongoose');
 
-module.exports.buildPipeLine = function ({ sort = 'createdAt', skip = 0, limit = 5, query = {} } = {}) {
+const sortDirValues = {
+    asec: 1,
+    desc: -1
+}
 
+module.exports.buildPipeLine = function ({ sort = 'createdAt:desc', skip = 0, limit = 5, query = {} } = {}) {
+    const [sortKey, sortDir] = sort.split(':');
     return ([
         {
             $match: {
@@ -52,7 +57,7 @@ module.exports.buildPipeLine = function ({ sort = 'createdAt', skip = 0, limit =
             $facet: {
                 "docs": [
                     {
-                        $sort: { [sort]: -1 }
+                        $sort: { [sortKey]: sortDirValues[sortDir] }
                     },
                     {
                         $skip: skip
