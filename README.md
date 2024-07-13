@@ -1,10 +1,3 @@
-# Starting up
-I have provided a zip file `settings.zip` with my submission which contains config for the app. Unzip the folder at projects root. The structure will look like this<br>
-settings -<br>
-&ensp;&ensp;&ensp;-- prod.js<br>
-&ensp;&ensp;&ensp;-- dev.js
-
-
 Run `yarn dev` or `npm run dev` this command will install the dependencies and start the server. If port not changed then you will find the client at http://localhost:4000 and the api will be served at http://localhost:4000/api.
 
 # About Falcon Boilerplate
