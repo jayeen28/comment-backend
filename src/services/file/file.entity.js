@@ -40,6 +40,7 @@ module.exports.create = ({ db, filePath, fileCtrl: { fileUp } }) => async (req, 
 module.exports.get = ({ db, filePath }) => async (req, res, next) => {
   try {
     const { id } = req.params;
+    if (!id) return res.status(404).send({ message: 'File not found' });
     const file = await db.findOne({ table: File, payload: { _id: id } });
     if (!file) return res.status(404).send({ message: 'File not found' });
     const exists = fs.existsSync(path.join(filePath, file.filename));
