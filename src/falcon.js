@@ -97,6 +97,7 @@ module.exports = class Falcon {
   wake() {
     try {
       if (!fs.existsSync(this.dataPath)) fs.mkdirSync(this.dataPath, { recursive: true });
+      if (!fs.existsSync(this.filePath)) fs.mkdirSync(this.filePath, { recursive: true });
 
       /**
        * Create an HTTP or HTTPS server based on the environment.
