@@ -89,6 +89,7 @@ module.exports.buildPipeLine = function ({ sort = 'createdAt:desc', skip = 0, li
                             createdAt: 1,
                             likes: 1,
                             dislikes: 1,
+                            replyOf: '$comment.replyOf',
                             replyCount: { $size: '$replies' }
                         }
                     }

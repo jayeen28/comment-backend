@@ -25,7 +25,8 @@ module.exports.create = ({ db, io }) => async (req, res, next) => {
             rawComment.likes = 0;
             rawComment.dislikes = 0;
             rawComment.replyCount = 0;
-            io.to('user').emit('new_comment', comment);
+            if (comment.replyOf) io.to('user').emit('new_reply', comment);
+            else io.to('user').emit('new_comment', comment);
             return res.status(201).send(rawComment);
         }
         else throw new Error('Comment not created');
