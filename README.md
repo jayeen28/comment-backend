@@ -1,5 +1,9 @@
 Run `yarn dev` or `npm run dev` this command will install the dependencies and start the server. The backend can serve client build too. I have pushed the updated build in this repo. So if port not changed then you will find the client at http://localhost:4000 and the api will be served at http://localhost:4000/api.
 
+To run in watch mode you can use `yarn run dev:watch`.
+
+*** The rest of this readme is about falcon boilerplate which is built by me to develop backend in a faster way. You can ignore these if you want. ***
+
 # About Falcon Boilerplate
 <img src="https://i.ibb.co/sWqXfkz/Screenshot-from-2024-04-29-15-08-28.png" align="left" width="30%" style="margin-right: 10px"/>
 Falcon Boilerplate is a service-based Node.js backend boilerplate that will help you kickstart and manage your projects more efficiently. This REST API server boilerplate is built upon a powerful stack of technologies, including Express.js, Socket.io, and Prisma with postgresql, to provide a comprehensive solution for web service development and database management. You can work faster like a falcon by using this template.
