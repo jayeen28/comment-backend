@@ -141,9 +141,7 @@ module.exports = class Falcon {
      * Handle GET requests by serving the client's index.html.
      * This ensures that the client-side application loads correctly.
      */
-    this.app.get('*', (req, res) => {
-      res.sendFile(path.join(this.appPath, 'client', 'index.html'));
-    });
+    this.app.use(this.express.static(path.join(this.appPath, 'client')));
 
     /**
      * Listen for incoming connections on the specified port.
