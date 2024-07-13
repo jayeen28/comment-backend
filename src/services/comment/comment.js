@@ -28,13 +28,6 @@ function commentApi() {
     */
     this.router.get('/comment', this.auth(), validate(validGetAll), getAll(this));
 
-    // /**
-    //  * GET /comment/:id
-    //  * @description This route is used to get a comment.
-    //  * @response {Object} 200 - The comment.
-    // */
-    // this.router.get('/comment/:id', get(this));
-
     /**
      * PATCH /comment/:id
      * @description This route is used to update a comment.

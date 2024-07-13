@@ -2,6 +2,9 @@ const { getSkip, getPaginationData } = require('../../utils/paginationHelper');
 const { buildPipeLine } = require('./comment.functions');
 const Comment = require('./comment.schema')
 
+/**
+ * Create a new comment and send socket events for realtime update.
+ */
 module.exports.create = ({ db, io }) => async (req, res, next) => {
     try {
         const { post } = req.params;
@@ -29,6 +32,9 @@ module.exports.create = ({ db, io }) => async (req, res, next) => {
     } catch (e) { next(e) }
 };
 
+/**
+ * Update a comment and send socket events for realtime updates.
+ */
 module.exports.update = ({ db, io }) => async (req, res, next) => {
     try {
         const { id: _id } = req.params;
@@ -42,6 +48,10 @@ module.exports.update = ({ db, io }) => async (req, res, next) => {
     } catch (e) { next(e) }
 };
 
+/**
+ * Comment reaction system for reacting to comments.
+ * Also provided socket events for realtime updates.
+ */
 module.exports.reaction = ({ db, io }) => async (req, res, next) => {
     try {
         const { id: _id, reaction } = req.params;
@@ -60,6 +70,10 @@ module.exports.reaction = ({ db, io }) => async (req, res, next) => {
     } catch (e) { next(e) }
 };
 
+/**
+ * Get all comments or replies with pagination.
+ * Used aggregation pipeline to get custom structured comments and calculate necessary informations.
+ */
 module.exports.getAll = ({ db }) => async (req, res, next) => {
     try {
         const { page = 1, limit: queryLimit = 5, sort, ...restQueries } = req.query;
@@ -74,6 +88,9 @@ module.exports.getAll = ({ db }) => async (req, res, next) => {
     } catch (e) { next(e) }
 };
 
+/**
+ * Remove a comment. Socket events sent for realtime updates.
+ */
 module.exports.remove = ({ db, io }) => async (req, res, next) => {
     try {
         const { id: _id } = req.params;

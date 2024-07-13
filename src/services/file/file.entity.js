@@ -19,7 +19,7 @@ module.exports.create = ({ db, filePath, fileCtrl: { fileUp } }) => async (req, 
     const { path, type, originalFilename: org_filename } = req.files.file;
     if (!path || !type || !org_filename) return res.status(400).send(badRequest);
     const [fileType] = type.split('/');
-    if (!fileType) return res.status(400).send({ type: 'fileTypeError', message: `Issue with file type for file ${originalFilename}` });
+    if (!fileType) return res.status(400).send({ type: 'fileTypeError', message: `Issue with file type for file ${org_filename}` });
     const filename = await fileUp(path, filePath);
     const file = await db.create({ table: File, payload: { filename, type, org_filename } })
     return res.status(200).send({ _id: file._id });

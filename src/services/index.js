@@ -7,7 +7,7 @@ function apiServices() {
   userApi.call(this);
   fileApi.call(this);
   commentApi.call(this);
-  this.router.use(errorMiddleWare(this));
+  this.router.use(errorMiddleWare(this));//Inject the error middleware. It should be always at the end.
 };
 
 function socketServices() {

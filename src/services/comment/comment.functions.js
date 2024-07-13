@@ -12,11 +12,11 @@ module.exports.buildPipeLine = function ({ sort = 'createdAt:desc', skip = 0, li
             $match: {
                 ...query,
                 post: query.post,
-                replyOf: { $eq: query.replyOf ? new mongoose.Types.ObjectId(query.replyOf) : null },
+                replyOf: { $eq: query.replyOf ? new mongoose.Types.ObjectId(query.replyOf) : null },// match replies when replyOf came with the query.
             }
         },
         {
-            $lookup: {
+            $lookup: {//Get all the matched comments
                 from: 'comments',
                 localField: '_id',
                 foreignField: '_id',
@@ -33,7 +33,7 @@ module.exports.buildPipeLine = function ({ sort = 'createdAt:desc', skip = 0, li
             }
         },
         {
-            $group: {
+            $group: {//group comments by comment id and calculate likes,dislikes
                 _id: '$comment._id',
                 createdAt: { $first: '$comment.createdAt' },
                 comment: { $first: '$comment' },
@@ -43,7 +43,7 @@ module.exports.buildPipeLine = function ({ sort = 'createdAt:desc', skip = 0, li
             }
         },
         {
-            $lookup: {
+            $lookup: {//get the users data for each comments
                 from: 'users',
                 localField: 'user',
                 foreignField: '_id',
@@ -54,10 +54,10 @@ module.exports.buildPipeLine = function ({ sort = 'createdAt:desc', skip = 0, li
             $unwind: '$user'
         },
         {
-            $facet: {
+            $facet: {// used facet to separate the totalDocs count and the documents in output.
                 "docs": [
                     {
-                        $sort: { [sortKey]: sortDirValues[sortDir] }
+                        $sort: { [sortKey]: sortDirValues[sortDir] }//sort docs based on query
                     },
                     {
                         $skip: skip
@@ -65,7 +65,7 @@ module.exports.buildPipeLine = function ({ sort = 'createdAt:desc', skip = 0, li
                     {
                         $limit: limit
                     },
-                    {
+                    {//get all the replies
                         $lookup: {
                             from: 'comments',
                             localField: '_id',

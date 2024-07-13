@@ -2,6 +2,9 @@ const bcrypt = require('bcrypt');
 const User = require('./user.schema');
 const jwt = require('jsonwebtoken');
 
+/**
+ * Hashes the user's password and store user in database.
+ */
 module.exports.register = ({ db }) => async (req, res, next) => {
   try {
     req.body.password = await bcrypt.hash(req.body.password, 8);
@@ -11,6 +14,9 @@ module.exports.register = ({ db }) => async (req, res, next) => {
   } catch (e) { next(e) }
 };
 
+/**
+ * Logout the current user by removing cookie.
+ */
 module.exports.logout = ({ config }) => async (req, res, next) => {
   try {
     res.clearCookie(config.AUTH_COOKIE_KEY);
@@ -18,6 +24,9 @@ module.exports.logout = ({ config }) => async (req, res, next) => {
   } catch (e) { next(e) }
 };
 
+/**
+ * Login the user by checking credentials and set jwt token as cookie in the client.
+ */
 module.exports.login = ({ db, config }) => async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -38,6 +47,9 @@ module.exports.login = ({ db, config }) => async (req, res, next) => {
   } catch (e) { next(e) }
 };
 
+/**
+ * Validating user with jwt token from cookie.
+ */
 module.exports.me = () => (req, res, next) => {
   try {
     return res.status(200).send(req.user);
