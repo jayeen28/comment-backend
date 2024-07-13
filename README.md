@@ -1,4 +1,4 @@
-Run `yarn dev` or `npm run dev` this command will install the dependencies and start the server. If port not changed then you will find the client at http://localhost:4000 and the api will be served at http://localhost:4000/api.
+Run `yarn dev` or `npm run dev` this command will install the dependencies and start the server. The backend can serve client build too. I have pushed the updated build in this repo. So if port not changed then you will find the client at http://localhost:4000 and the api will be served at http://localhost:4000/api.
 
 # About Falcon Boilerplate
 <img src="https://i.ibb.co/sWqXfkz/Screenshot-from-2024-04-29-15-08-28.png" align="left" width="30%" style="margin-right: 10px"/>
