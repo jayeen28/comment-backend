@@ -2,11 +2,11 @@ version: '3.7'
 services:
   database:
     image: mongo
-    container_name: techzu-mongo
+    container_name: comment-mongo
     command: mongod --auth
     restart: always
     environment:
-      - MONGO_INITDB_DATABASE=techzu
+      - MONGO_INITDB_DATABASE=comment
       - MONGO_INITDB_ROOT_USERNAME=jayeen
       - MONGO_INITDB_ROOT_PASSWORD=6783
     ports:

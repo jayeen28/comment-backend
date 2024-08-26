@@ -5,9 +5,9 @@ db.createUser(
         roles: [
             {
                 role: "readWrite",
-                db: "techzu"
+                db: "comment"
             }
         ]
     }
 );
-db.createCollection("techzu");
+db.createCollection("comment");
